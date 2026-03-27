@@ -6,18 +6,16 @@ import './Recommendations.css';
 function Recommendations() {
   const [recos, setRecos] = useState(PRODUCTS.slice(0, 3));
 
-  useEffect(() => {
-    // TODO: adapter les recommandations en fonction du contenu du panier
-    const productOnCart = eventBus.on('productAdded', (product) => {
-      console.log('Product added to cart:', product);
-    });
+    // DONE : adapter les recommandations en fonction du contenu du panier
+    useEffect(() => {
+        const unsub = eventBus.on('cartUpdated', ({ items }) => {
+            const cartIds = items.map(i => Number(i.id));
+            const filtered = PRODUCTS.filter(p => !cartIds.includes(p.id)).slice(0, 3);
+            setRecos(filtered.length > 0 ? filtered : PRODUCTS.slice(0, 3));
+        });
 
-    setRecos(PRODUCTS.filter(p => p.name != productOnCart.name).slice(0, 3));
-
-    return () => {
-      eventBus.off('productAdded', productOnCart);
-    };
-  }, []);
+        return () => unsub();
+    }, []);
 
   const handleAddReco = (product) => {
     eventBus.emit('productAdded', product);

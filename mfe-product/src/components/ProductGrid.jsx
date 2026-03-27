@@ -21,7 +21,7 @@ function ProductCard({ product, onAdd }) {
 function ProductGrid() {
   const handleAdd = (product) => {
     // DONE: notifier le reste de l'application qu'un produit a ete ajoute
-    eventBus.emit("cart:add-item", {
+    eventBus.emit("productAdded", {
       id: String(product.id),
       name: product.name,
       price: product.price,
