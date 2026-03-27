@@ -14,7 +14,7 @@ module.exports = {
     port: 3000,
     hot: true,
     historyApiFallback: true,
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    headers: { 'Access-Control-Allow-Origin': '*' }
   },
   module: {
     rules: [
@@ -43,8 +43,12 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
       name: 'shell',
-      // TODO: declarer les 3 MFEs comme remotes
-      remotes: {},
+      // DONE: declarer les 3 MFEs comme remotes
+      remotes: {
+        mfeCart: "mfeCart@http://localhost:3002/remoteEntry.js",
+        mfeProduct: "mfe_product@http://localhost:3001/remoteEntry.js",
+        mfeReco: "mfeReco@http://localhost:3003/remoteEntry.js",
+      },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
         'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
