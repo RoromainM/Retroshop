@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import eventBus from 'shared/eventBus';
-import './Cart.css';
+import React, { useState, useEffect } from "react";
+import eventBus from "shared/eventBus";
+import "./Cart.css";
+
+function createCartId(productId) {
+  return `${productId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
 
 function Cart() {
   const [items, setItems] = useState([]);
@@ -8,15 +12,31 @@ function Cart() {
   const total = items.reduce((sum, item) => sum + item.price, 0);
 
   useEffect(() => {
-    // TODO: ecouter les ajouts de produits et mettre a jour le state
+    const handleProductAdded = (product) => {
+      setItems((prev) => [
+        ...prev,
+        {
+          ...product,
+          cartId: product.cartId || createCartId(product.id),
+        },
+      ]);
+    };
+
+    const unsubscribe = eventBus.on("productAdded", handleProductAdded);
+
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
-    // TODO: notifier le reste de l'application quand le panier change
+    eventBus.emit("cartUpdated", {
+      items,
+      count: items.length,
+      total,
+    });
   }, [items]);
 
   const handleRemove = (cartId) => {
-    setItems(prev => prev.filter(item => item.cartId !== cartId));
+    setItems((prev) => prev.filter((item) => item.cartId !== cartId));
   };
 
   const handleClear = () => {
@@ -31,17 +51,24 @@ function Cart() {
       ) : (
         <>
           <ul className="cart-items">
-            {items.map(item => (
+            {items.map((item) => (
               <li key={item.cartId} className="cart-item">
                 <span className="item-name">{item.name}</span>
                 <span className="item-price">{item.price} EUR</span>
-                <button className="remove-btn" onClick={() => handleRemove(item.cartId)}>x</button>
+                <button
+                  className="remove-btn"
+                  onClick={() => handleRemove(item.cartId)}
+                >
+                  x
+                </button>
               </li>
             ))}
           </ul>
           <div className="cart-footer">
             <div className="cart-total">Total : {total} EUR</div>
-            <button className="clear-btn" onClick={handleClear}>Vider le panier</button>
+            <button className="clear-btn" onClick={handleClear}>
+              Vider le panier
+            </button>
           </div>
         </>
       )}
