@@ -9,6 +9,9 @@ module.exports = {
     port: 3003,
     historyApiFallback: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
+    client: {
+      overlay: false,
+    }
   },
   resolve: {
     extensions: ['.js', '.jsx'],
